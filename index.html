@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泰坦尼克號生存預測</title>
+    <style>
+        /* 全域樣式 */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        nav {
+            display: flex;
+            background-color: #343a40;
+            overflow-x: auto;
+        }
+
+        nav a {
+            flex: 1;
+            padding: 1rem;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #495057;
+        }
+
+        #content {
+            padding: 2rem;
+            background-color: white;
+            min-height: 600px;
+        }
+
+        h2 {
+            color: #007bff;
+        }
+
+        p, ul, table {
+            line-height: 1.6;
+        }
+
+        pre {
+            background: #f8f9fa;
+            padding: 1rem;
+            overflow: auto;
+            border-radius: 5px;
+        }
+
+        code {
+            background: #f1f1f1;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 0.5rem;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>泰坦尼克號生存預測</h1>
+    </header>
+
+    <nav>
+        <a href="#" onclick="showContent('overview')">專案簡介</a>
+        <a href="#" onclick="showContent('introduction')">專案介紹</a>
+        <a href="#" onclick="showContent('data')">數據描述</a>
+        <a href="#" onclick="showContent('model')">模型選擇與訓練</a>
+        <a href="#" onclick="showContent('results')">預測結果</a>
+        <a href="#" onclick="showContent('references')">參考資料與附錄</a>
+        <a href="#" onclick="showContent('team')">製作團隊</a>
+    </nav>
+
+    <div id="content">
+        <p>點擊上方選單以查看內容。</p>
+    </div>
+
+    <script>
+        const contentData = {
+            overview: `
+                <h2>專案簡介</h2>
+                <p>泰坦尼克號生存預測專案旨在透過歷史數據分析，探討影響乘客生存率的因素，並建立機器學習模型預測生存機率。</p>
+                <p>本專案的主要目的是提供對於緊急事件中生存可能性的洞察，並提出改善未來類似事件生存率的建議。</p>
+            `,
+            introduction: `
+                <h2>專案介紹</h2>
+                <h3>(1) 研究背景</h3>
+                <p>泰坦尼克號是一艘英國的奧林匹克級郵輪，於1912年首航時，從英國南安普頓出發，經過法國瑟堡和愛爾蘭昆士敦，原定駛往美國紐約。然而，該船在首次航行中於1912年4月14日晚間與冰山相撞，導致船體破損，最終在4月15日沉沒。此次事故共造成2224名乘客和船員中的1502人喪生，成為歷史上最著名的海難之一。</p>
+                <p>事故發生後，各方對於泰坦尼克號沉沒的原因、安全措施和乘客的生存機會進行了廣泛研究。根據歷史數據和資料，乘客的生存機會與多種因素有關，如年齡、性別、艙等、家庭成員等。因此，通過對這些因素進行分析，我們可以更好地理解乘客生存的可能性以及在類似事故中提高生存機會的方法。</p>
+                <h3>(2) 研究問題</h3>
+                <p>本研究旨在分析泰坦尼克號上乘客的生存率，並探討影響生存率的各種因素。具體來說，我們將回答以下問題：</p>
+                <ul>
+                    <li>乘客的年齡、性別、艙等、家庭成員等因素對生存率有何影響？</li>
+                    <li>哪些因素對生存率具有最大的影響力？</li>
+                    <li>基於這些因素，如何預測乘客在類似事故中的生存機會？</li>
+                </ul>
+                <p>為了回答這些問題，本研究將運用人工智慧的監督學習方法，對泰坦尼克號乘客的歷史數據進行分析。最後，我們將提出建議以提高在類似事故中的生存機會。</p>
+            `,
+            data: `
+                <h2>數據描述</h2>
+                <h3>(1) 數據集的來源</h3>
+                <p><a href="https://www.kaggle.com/datasets/brendan45774/test-file" target="_blank">Kaggle 數據集</a></p>
+                <h3>(2) 數據集描述</h3>
+                <p>原始資料筆數共有891筆，有12個變量。</p>
+                <ul>
+                    <li><strong>PassengerId</strong>：乘客ID</li>
+                    <li><strong>Survived</strong>：生存情況（是否存活）</li>
+                    <li><strong>Pclass</strong>：艙等（1=頭等艙, 2=二等艙, 3=三等艙）</li>
+                    <li><strong>Name</strong>：姓名</li>
+                    <li><strong>Sex</strong>：性別</li>
+                    <li><strong>Age</strong>：年齡</li>
+                    <li><strong>SibSp</strong>：兄弟姐妹/配偶數量</li>
+                    <li><strong>Parch</strong>：父母/子女數量</li>
+                    <li><strong>Ticket</strong>：船票號碼</li>
+                    <li><strong>Fare</strong>：船票價格</li>
+                    <li><strong>Cabin</strong>：船艙號碼</li>
+                    <li><strong>Embarked</strong>：登船港口</li>
+                </ul>
+                <h3>(3) 特徵工程</h3>
+                <p>以下是所選擇的特徵及理由：</p>
+                <ul>
+                    <li><strong>Pclass</strong>：社會經濟階層。</li>
+                    <li><strong>Sex</strong>：性別。</li>
+                    <li><strong>Age</strong>：年齡。</li>
+                    <li><strong>SibSp</strong>：兄弟姊妹/配偶數量。</li>
+                    <li><strong>Parch</strong>：父母/子女數量。</li>
+                    <li><strong>Fare</strong>：票價。</li>
+                    <li><strong>Embarked</strong>：登船港口。</li>
+                </ul>
+            `,
+            model: `
+                <h2>模型選擇與訓練</h2>
+                <h3>(1) 採用之模型</h3>
+                <p>本研究使用決策樹進行預測。</p>
+                <h3>(2) 訓練集與測試集</h3>
+                <ul>
+                    <li>1:9 測試筆數: 71</li>
+                    <li>2:8 測試筆數: 142</li>
+                </ul>
+            `,
+            results: `
+                <h2>預測結果</h2>
+                <h3>(呈現最終結果)</h3>
+            `,
+            references: `
+                <h2>參考資料與附錄</h2>
+                <pre style="background-color: #f8f9fa; padding: 1rem; border-radius: 5px; overflow-x: auto;">
+<code style="color: #333;">
+# 導入必要的套件
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.preprocessing import OneHotEncoder
+
+# 讀取資料集
+url = "https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv"
+data = pd.read_csv(url)
+
+# 原本資料筆數
+print("原本資料筆數：", len(data))
+
+# 檢查缺失值
+print("缺失值狀況：")
+print(data.isnull().sum())
+
+# 數據預處理
+data = data[['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked', 'Survived']].dropna()
+
+print("整理之資料筆數：", len(data))
+
+# One-Hot Encoding
+cat_features = ['Sex', 'Embarked']
+one_hot_encoder = OneHotEncoder(sparse=False)
+one_hot_encoded = one_hot_encoder.fit_transform(data[cat_features])
+encoded_df = pd.DataFrame(one_hot_encoded, columns=one_hot_encoder.get_feature_names_out(cat_features), index=data.index)
+data = data.drop(cat_features, axis=1)
+data = pd.concat([data, encoded_df], axis=1)
+
+# 分割訓練集和測試集
+X = data.drop("Survived", axis=1)
+y = data["Survived"]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
+
+# 建立決策樹模型
+clf = DecisionTreeClassifier(random_state=42, max_depth=3)
+clf.fit(X_train, y_train)
+
+# 預測和評估
+y_pred = clf.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+
+print(f"Accuracy: {accuracy:.2f}")
+
+# 畫出樹狀圖形
+plt.figure(figsize=(16, 10))
+plot_tree(clf, filled=True, feature_names=X.columns, class_names=['Not Survived', 'Survived'], proportion=True)
+plt.show()
+</code>
+        </pre>
+            `,
+            team: `
+                <h2>製作團隊</h2>
+                <p>本專案由以下團隊成員共同完成：</p>
+                <ul>
+                    <li>張小明 - 數據分析與特徵工程</li>
+                    <li>李大華 - 模型設計與訓練</li>
+                    <li>王小美 - 報告撰寫與視覺化</li>
+                </ul>
+            `
+        };
+
+        function showContent(section) {
+            const contentDiv = document.getElementById('content');
+            contentDiv.innerHTML = contentData[section];
+        }
+    </script>
+</body>
+</html>
