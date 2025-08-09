@@ -1,254 +1,431 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>泰坦尼克號生存預測</title>
-    <style>
-        /* 全域樣式 */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: #333;
-            background-color: #f9f9f9;
-        }
-
-        header {
-            background-color: #007bff;
-            color: white;
-            padding: 1.5rem;
-            text-align: center;
-        }
-
-        nav {
-            display: flex;
-            background-color: #343a40;
-            overflow-x: auto;
-        }
-
-        nav a {
-            flex: 1;
-            padding: 1rem;
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            transition: background 0.3s;
-        }
-
-        nav a:hover {
-            background-color: #495057;
-        }
-
-        #content {
-            padding: 2rem;
-            background-color: white;
-            min-height: 600px;
-        }
-
-        h2 {
-            color: #007bff;
-        }
-
-        p, ul, table {
-            line-height: 1.6;
-        }
-
-        pre {
-            background: #f8f9fa;
-            padding: 1rem;
-            overflow: auto;
-            border-radius: 5px;
-        }
-
-        code {
-            background: #f1f1f1;
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-family: monospace;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-        }
-
-        table th, table td {
-            border: 1px solid #ddd;
-            padding: 0.5rem;
-            text-align: left;
-        }
-
-        table th {
-            background-color: #f2f2f2;
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>英文單字進階測驗（201–400 題庫，隨機抽 20 題）</title>
+<style>
+  :root { --gap: 10px; }
+  *{box-sizing:border-box}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;margin:0;background:#f7f7f8;color:#222;}
+  header{padding:18px 20px;background:#fff;border-bottom:1px solid #e6e6e6;position:sticky;top:0;z-index:1}
+  h1{font-size:18px;margin:0}
+  main{max-width:900px;margin:0 auto;padding:18px}
+  .card{background:#fff;border:1px solid #e9e9e9;border-radius:12px;padding:16px;margin-bottom:14px}
+  button{border:0;border-radius:10px;padding:10px 14px;cursor:pointer;background:#111;color:#fff}
+  button.secondary{background:#fff;color:#111;border:1px solid #ddd}
+  .option{display:block;padding:12px;border:1px solid #ddd;border-radius:10px;margin:8px 0;cursor:pointer}
+  .option.correct{border-color:#11a911;background:#effaf0}
+  .option.wrong{border-color:#e23d3d;background:#fff1f1}
+  .hidden{display:none}
+  .pill{display:inline-block;padding:4px 10px;border:1px solid #ddd;border-radius:999px;background:#fafafa}
+  .muted{color:#666}
+  .small{font-size:12px}
+  input[type="text"]{width:100%;padding:10px;border:1px solid #ddd;border-radius:10px;font-size:16px}
+  .row{display:flex;gap:var(--gap);flex-wrap:wrap;align-items:center}
+  .grow{flex:1 1 auto}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:8px;border-bottom:1px solid #eee;text-align:left}
+</style>
 </head>
 <body>
-
-    <header>
-        <h1>泰坦尼克號生存預測</h1>
-    </header>
-
-    <nav>
-        <a href="#" onclick="showContent('overview')">專案簡介</a>
-        <a href="#" onclick="showContent('introduction')">專案介紹</a>
-        <a href="#" onclick="showContent('data')">數據描述</a>
-        <a href="#" onclick="showContent('model')">模型選擇與訓練</a>
-        <a href="#" onclick="showContent('results')">預測結果</a>
-        <a href="#" onclick="showContent('references')">參考資料與附錄</a>
-        <a href="#" onclick="showContent('team')">製作團隊</a>
-    </nav>
-
-    <div id="content">
-        <p>點擊上方選單以查看內容。</p>
+<header class="row">
+  <h1 class="grow">英文單字進階測驗（混合題型｜隨機 20 題）</h1>
+  <div class="pill small">題庫：201–400</div>
+</header>
+<main>
+  <section id="intro" class="card">
+    <p class="muted">此版本已內建你的題庫（201–400）。按下「開始測驗」即可抽題。題型包含：
+      <b>英→中四選一</b>、<b>中→英四選一</b>、<b>拼字題</b>、<b>填空題</b>（英文缺字）</p>
+    <div class="row">
+      <button id="btnStart">開始測驗</button>
+      <button id="btnShowList" class="secondary">查看題庫</button>
+      <div class="muted small">一次出題 20 題，結束可下載錯題 CSV。</div>
     </div>
+  </section>
 
-    <script>
-        const contentData = {
-            overview: `
-                <h2>專案簡介</h2>
-                <p>泰坦尼克號生存預測專案旨在透過歷史數據分析，探討影響乘客生存率的因素，並建立機器學習模型預測生存機率。</p>
-                <p>本專案的主要目的是提供對於緊急事件中生存可能性的洞察，並提出改善未來類似事件生存率的建議。</p>
-            `,
-            introduction: `
-                <h2>專案介紹</h2>
-                <h3>(1) 研究背景</h3>
-                <p>泰坦尼克號是一艘英國的奧林匹克級郵輪，於1912年首航時，從英國南安普頓出發，經過法國瑟堡和愛爾蘭昆士敦，原定駛往美國紐約。然而，該船在首次航行中於1912年4月14日晚間與冰山相撞，導致船體破損，最終在4月15日沉沒。此次事故共造成2224名乘客和船員中的1502人喪生，成為歷史上最著名的海難之一。</p>
-                <p>事故發生後，各方對於泰坦尼克號沉沒的原因、安全措施和乘客的生存機會進行了廣泛研究。根據歷史數據和資料，乘客的生存機會與多種因素有關，如年齡、性別、艙等、家庭成員等。因此，通過對這些因素進行分析，我們可以更好地理解乘客生存的可能性以及在類似事故中提高生存機會的方法。</p>
-                <h3>(2) 研究問題</h3>
-                <p>本研究旨在分析泰坦尼克號上乘客的生存率，並探討影響生存率的各種因素。具體來說，我們將回答以下問題：</p>
-                <ul>
-                    <li>乘客的年齡、性別、艙等、家庭成員等因素對生存率有何影響？</li>
-                    <li>哪些因素對生存率具有最大的影響力？</li>
-                    <li>基於這些因素，如何預測乘客在類似事故中的生存機會？</li>
-                </ul>
-                <p>為了回答這些問題，本研究將運用人工智慧的監督學習方法，對泰坦尼克號乘客的歷史數據進行分析。最後，我們將提出建議以提高在類似事故中的生存機會。</p>
-            `,
-            data: `
-                <h2>數據描述</h2>
-                <h3>(1) 數據集的來源</h3>
-                <p><a href="https://www.kaggle.com/datasets/brendan45774/test-file" target="_blank">Kaggle 數據集</a></p>
-                <h3>(2) 數據集描述</h3>
-                <p>原始資料筆數共有891筆，有12個變量。</p>
-                <ul>
-                    <li><strong>PassengerId</strong>：乘客ID</li>
-                    <li><strong>Survived</strong>：生存情況（是否存活）</li>
-                    <li><strong>Pclass</strong>：艙等（1=頭等艙, 2=二等艙, 3=三等艙）</li>
-                    <li><strong>Name</strong>：姓名</li>
-                    <li><strong>Sex</strong>：性別</li>
-                    <li><strong>Age</strong>：年齡</li>
-                    <li><strong>SibSp</strong>：兄弟姐妹/配偶數量</li>
-                    <li><strong>Parch</strong>：父母/子女數量</li>
-                    <li><strong>Ticket</strong>：船票號碼</li>
-                    <li><strong>Fare</strong>：船票價格</li>
-                    <li><strong>Cabin</strong>：船艙號碼</li>
-                    <li><strong>Embarked</strong>：登船港口</li>
-                </ul>
-                <h3>(3) 特徵工程</h3>
-                <p>以下是所選擇的特徵及理由：</p>
-                <ul>
-                    <li><strong>Pclass</strong>：社會經濟階層。</li>
-                    <li><strong>Sex</strong>：性別。</li>
-                    <li><strong>Age</strong>：年齡。</li>
-                    <li><strong>SibSp</strong>：兄弟姊妹/配偶數量。</li>
-                    <li><strong>Parch</strong>：父母/子女數量。</li>
-                    <li><strong>Fare</strong>：票價。</li>
-                    <li><strong>Embarked</strong>：登船港口。</li>
-                </ul>
-            `,
-            model: `
-                <h2>模型選擇與訓練</h2>
-                <h3>(1) 採用之模型</h3>
-                <p>本研究使用決策樹進行預測。</p>
-                <h3>(2) 訓練集與測試集</h3>
-                <ul>
-                    <li>1:9 測試筆數: 71</li>
-                    <li>2:8 測試筆數: 142</li>
-                </ul>
-            `,
-            results: `
-                <h2>預測結果</h2>
-                <h3>(呈現最終結果)</h3>
-            `,
-            references: `
-                <h2>參考資料與附錄</h2>
-                <pre style="background-color: #f8f9fa; padding: 1rem; border-radius: 5px; overflow-x: auto;">
-<code style="color: #333;">
-# 導入必要的套件
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier, plot_tree
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-from sklearn.preprocessing import OneHotEncoder
+  <section id="quizBox" class="card hidden">
+    <div class="row">
+      <div>第 <span id="qIdx">1</span>/20 題　<span id="qType" class="pill small"></span></div>
+      <div class="grow"></div>
+      <div>得分：<b id="score">0</b></div>
+    </div>
+    <h2 id="question" style="margin:12px 0 8px"></h2>
+    <div id="options"></div>
+    <div id="inputArea" class="hidden">
+      <input id="answerInput" type="text" placeholder="輸入答案後按『送出』">
+      <div class="row" style="margin-top:10px">
+        <button id="btnSubmit">送出</button>
+        <button id="btnReveal" class="secondary">看解答</button>
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button id="btnNext" class="hidden">下一題</button>
+      <button id="btnFinish" class="secondary hidden">看結果</button>
+    </div>
+  </section>
 
-# 讀取資料集
-url = "https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv"
-data = pd.read_csv(url)
+  <section id="resultBox" class="card hidden">
+    <h3>測驗完成！</h3>
+    <p>總分：<b id="finalScore">0</b> / 20</p>
+    <div id="review"></div>
+    <div class="row" style="margin-top:10px">
+      <button id="btnRetry">再測一次（再抽 20 題）</button>
+      <button id="btnDownload" class="secondary">下載錯題（CSV）</button>
+    </div>
+  </section>
 
-# 原本資料筆數
-print("原本資料筆數：", len(data))
+  <section id="bankBox" class="card hidden">
+    <h3>題庫（201–400）</h3>
+    <div class="small muted">共 <span id="bankCount"></span> 筆</div>
+    <table id="bankTbl"><thead><tr><th>#</th><th>English</th><th>中文</th></tr></thead><tbody></tbody></table>
+  </section>
+</main>
 
-# 檢查缺失值
-print("缺失值狀況：")
-print(data.isnull().sum())
+<script>
+const WORDS = [
+  {en:"bottle",zh:"瓶子"},
+  {en:"bowl",zh:"碗"},
+  {en:"bridge",zh:"橋樑"},
+  {en:"brown",zh:"棕色；咖啡色"},
+  {en:"businessman",zh:"商人"},
+  {en:"busy",zh:"忙；忙碌"},
+  {en:"butter",zh:"奶油"},
+  {en:"camera",zh:"相機"},
+  {en:"careful",zh:"小心的；仔細的"},
+  {en:"cell phone",zh:"手機"},
+  {en:"chalk",zh:"粉筆"},
+  {en:"cheap",zh:"便宜的"},
+  {en:"cheat",zh:"欺騙；作弊"},
+  {en:"cheese",zh:"乳酪"},
+  {en:"chopstick",zh:"筷子"},
+  {en:"church",zh:"教堂"},
+  {en:"circle",zh:"圓形；圍起來"},
+  {en:"city",zh:"城市"},
+  {en:"climb",zh:"爬；攀爬"},
+  {en:"coffee",zh:"咖啡"},
+  {en:"collect",zh:"收集"},
+  {en:"convenient",zh:"便利的"},
+  {en:"copy",zh:"影印；拷貝"},
+  {en:"couch",zh:"長沙發；睡椅"},
+  {en:"count",zh:"數數；計算"},
+  {en:"country",zh:"鄉村；國家"},
+  {en:"crazy",zh:"瘋狂的"},
+  {en:"cry",zh:"哭泣"},
+  {en:"dangerous",zh:"危險的"},
+  {en:"dark",zh:"黑暗的"},
+  {en:"date",zh:"日期"},
+  {en:"daughter",zh:"女兒"},
+  {en:"decide",zh:"決定"},
+  {en:"delicious",zh:"美味的"},
+  {en:"department store",zh:"百貨公司"},
+  {en:"dictionary",zh:"字典"},
+  {en:"different",zh:"不同的"},
+  {en:"Double Tenth Day",zh:"雙十節"},
+  {en:"dozen",zh:"一打"},
+  {en:"driver",zh:"司機"},
+  {en:"dry",zh:"乾燥的；乾的"},
+  {en:"elf",zh:"小精靈"},
+  {en:"e-mail",zh:"電子郵件"},
+  {en:"excellent",zh:"傑出的；優秀的"},
+  {en:"excited",zh:"興奮的"},
+  {en:"expensive",zh:"昂貴的"},
+  {en:"factory",zh:"工廠"},
+  {en:"fan",zh:"電風扇；扇子"},
+  {en:"farmer",zh:"農夫"},
+  {en:"fast",zh:"快的"},
+  {en:"Father’s Day",zh:"父親節"},
+  {en:"favorite",zh:"最愛的"},
+  {en:"fall",zh:"秋天"},
+  {en:"finally",zh:"最後；終於"},
+  {en:"finger",zh:"手指"},
+  {en:"fisherman",zh:"漁夫"},
+  {en:"foreigner",zh:"外國人"},
+  {en:"fork",zh:"叉子"},
+  {en:"garbage",zh:"垃圾"},
+  {en:"garden",zh:"花園"},
+  {en:"gift",zh:"禮物"},
+  {en:"glasses",zh:"眼鏡"},
+  {en:"glove",zh:"手套"},
+  {en:"goat",zh:"山羊"},
+  {en:"grass",zh:"草"},
+  {en:"gray",zh:"灰色"},
+  {en:"ground",zh:"地面"},
+  {en:"habit",zh:"習慣"},
+  {en:"Halloween",zh:"萬聖節"},
+  {en:"healthy",zh:"健康的"},
+  {en:"history",zh:"歷史"},
+  {en:"holiday",zh:"假日"},
+  {en:"honest",zh:"誠實的；正直的"},
+  {en:"horse",zh:"馬"},
+  {en:"hospital",zh:"醫院"},
+  {en:"hot dog",zh:"熱狗"},
+  {en:"hotel",zh:"旅館"},
+  {en:"hundred",zh:"百"},
+  {en:"hurt",zh:"受傷；危害"},
+  {en:"important",zh:"重要的"},
+  {en:"Internet",zh:"網際網路"},
+  {en:"island",zh:"島嶼"},
+  {en:"jacket",zh:"夾克"},
+  {en:"jeans",zh:"牛仔褲"},
+  {en:"jog",zh:"慢跑"},
+  {en:"jump",zh:"跳躍"},
+  {en:"kick",zh:"踢"},
+  {en:"knee",zh:"膝蓋"},
+  {en:"knife",zh:"刀子"},
+  {en:"lake",zh:"湖泊"},
+  {en:"laugh",zh:"笑"},
+  {en:"lazy",zh:"懶惰的"},
+  {en:"left",zh:"左邊"},
+  {en:"library",zh:"圖書館"},
+  {en:"listen",zh:"聽"},
+  {en:"lonely",zh:"孤獨的；單獨的"},
+  {en:"lucky",zh:"幸運的"},
+  {en:"machine",zh:"機器"},
+  {en:"medicine",zh:"藥"},
+  {en:"menu",zh:"菜單"},
+  {en:"minute",zh:"分鐘"},
+  {en:"mistake",zh:"錯誤"},
+  {en:"Moon Festival",zh:"中秋節"},
+  {en:"Mother’s Day",zh:"母親節"},
+  {en:"money",zh:"金錢"},
+  {en:"mountain",zh:"山；山脈"},
+  {en:"movie",zh:"電影"},
+  {en:"museum",zh:"博物館"},
+  {en:"neck",zh:"頸部；脖子"},
+  {en:"New Year’s Day",zh:"新年（元旦）"},
+  {en:"noodle",zh:"麵條"},
+  {en:"north",zh:"北方；北方的"},
+  {en:"office",zh:"辦公室"},
+  {en:"page",zh:"頁；頁數"},
+  {en:"pants",zh:"褲子"},
+  {en:"parents",zh:"父母親"},
+  {en:"pet",zh:"寵物"},
+  {en:"picnic",zh:"郊遊；野餐"},
+  {en:"picture",zh:"圖畫；照片"},
+  {en:"playground",zh:"操場；遊樂場"},
+  {en:"police station",zh:"警察局"},
+  {en:"popcorn",zh:"爆玉米花"},
+  {en:"popular",zh:"受歡迎的"},
+  {en:"pork",zh:"豬肉"},
+  {en:"post office",zh:"郵局"},
+  {en:"problem",zh:"問題；困難"},
+  {en:"pull",zh:"拉"},
+  {en:"push",zh:"推"},
+  {en:"queen",zh:"皇后"},
+  {en:"quiet",zh:"安靜的；安靜"},
+  {en:"quiz",zh:"小考"},
+  {en:"radio",zh:"廣播"},
+  {en:"rainbow",zh:"彩虹"},
+  {en:"restaurant",zh:"餐廳"},
+  {en:"right",zh:"右邊；正確的"},
+  {en:"river",zh:"河流"},
+  {en:"road",zh:"路"},
+  {en:"run",zh:"跑"},
+  {en:"safe",zh:"安全的"},
+  {en:"salad",zh:"沙拉"},
+  {en:"salty",zh:"鹹的"},
+  {en:"same",zh:"相同的；一樣的"},
+  {en:"student",zh:"學生"},
+  {en:"season",zh:"季節"},
+  {en:"shape",zh:"形狀"},
+  {en:"share",zh:"分享"},
+  {en:"sheep",zh:"綿羊"},
+  {en:"ship",zh:"大船"},
+  {en:"shirt",zh:"襯衫"},
+  {en:"shoe",zh:"鞋子"},
+  {en:"shop",zh:"商店"},
+  {en:"shopkeeper",zh:"店主"},
+  {en:"shoulder",zh:"肩膀"},
+  {en:"shy",zh:"害羞的"},
+  {en:"slow",zh:"慢的"},
+  {en:"smile",zh:"微笑"},
+  {en:"smoke",zh:"吸煙；煙"},
+  {en:"snake",zh:"蛇"},
+  {en:"snowy",zh:"下雪的"},
+  {en:"sock",zh:"短襪"},
+  {en:"song",zh:"歌曲"},
+  {en:"sound",zh:"聲響；聽起來"},
+  {en:"south",zh:"南方；南方的；南部的"},
+  {en:"speak",zh:"說話"},
+  {en:"spoon",zh:"湯匙"},
+  {en:"spring",zh:"春天；泉水"},
+  {en:"story",zh:"故事"},
+  {en:"stranger",zh:"陌生人"},
+  {en:"street",zh:"街道"},
+  {en:"successful",zh:"成功的"},
+  {en:"sugar",zh:"糖"},
+  {en:"summer",zh:"夏天"},
+  {en:"supermarket",zh:"超級市場"},
+  {en:"surprised",zh:"感到驚訝的"},
+  {en:"sweater",zh:"毛衣"},
+  {en:"swim",zh:"游泳"},
+  {en:"Taiwan",zh:"台灣"},
+  {en:"taxi",zh:"計程車"},
+  {en:"Teacher’s Day",zh:"教師節"},
+  {en:"telephone",zh:"電話"},
+  {en:"television",zh:"電視"},
+  {en:"Thanksgiving",zh:"感恩節"},
+  {en:"thirsty",zh:"口渴的"},
+  {en:"thousand",zh:"千"},
+  {en:"tomorrow",zh:"明天"},
+  {en:"traffic",zh:"交通"},
+  {en:"train station",zh:"火車站"},
+  {en:"truck",zh:"貨車"},
+  {en:"typhoon",zh:"颱風"},
+  {en:"umbrella",zh:"雨傘"},
+  {en:"uniform",zh:"制服"},
+  {en:"vacation",zh:"假期"},
+  {en:"vegetable",zh:"蔬菜"},
+  {en:"week",zh:"星期（週）"},
+  {en:"weekend",zh:"週末"},
+  {en:"white",zh:"白色"},
+  {en:"window",zh:"窗戶"},
+  {en:"winter",zh:"冬天"},
+  {en:"yesterday",zh:"昨天"},
+  {en:"young",zh:"年輕"}
+];
 
-# 數據預處理
-data = data[['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked', 'Survived']].dropna()
+// ======= helpers =======
+const $=q=>document.querySelector(q);
+const shuffle=arr=>arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]);
+const pickN=(arr,n)=>shuffle(arr).slice(0,Math.min(n,arr.length));
+const csvEscape=s=>`"${String(s).replaceAll('"','""')}"`;
 
-print("整理之資料筆數：", len(data))
+let quiz=[],idx=0,score=0,answers=[];
 
-# One-Hot Encoding
-cat_features = ['Sex', 'Embarked']
-one_hot_encoder = OneHotEncoder(sparse=False)
-one_hot_encoded = one_hot_encoder.fit_transform(data[cat_features])
-encoded_df = pd.DataFrame(one_hot_encoded, columns=one_hot_encoder.get_feature_names_out(cat_features), index=data.index)
-data = data.drop(cat_features, axis=1)
-data = pd.concat([data, encoded_df], axis=1)
+function buildQuiz(){
+  const types=["EN→中（選擇）","中→英（選擇）","拼字題","填空題"];
+  const picked=pickN(WORDS,20);
+  quiz=picked.map(base=>{
+    const type=types[Math.floor(Math.random()*types.length)];
+    let data={base,type,options:[],prompt:""};
+    if(type==="EN→中（選擇）"){
+      data.prompt=`${base.en} 的中文意思是？`;
+      data.answer=base.zh;
+      data.options=shuffle([base.zh,...pickN(WORDS.filter(w=>w!==base),3).map(w=>w.zh)]);
+    }else if(type==="中→英（選擇）"){
+      data.prompt=`「${base.zh}」的英文是？`;
+      data.answer=base.en;
+      data.options=shuffle([base.en,...pickN(WORDS.filter(w=>w!==base),3).map(w=>w.en)]);
+    }else if(type==="拼字題"){
+      data.prompt=`請輸入「${base.zh}」的英文拼字：`;
+      data.answer=base.en;
+    }else{ // 填空題
+      // 選 1~2 個位置用 _ 取代
+      const s=base.en;
+      const positions = Array.from(s).map((_,i)=>i).filter(i=>/[a-zA-Z]/.test(s[i]));
+      const removeCount = Math.min(2, Math.max(1, Math.floor(s.length/4)));
+      const pickedPos = pickN(positions, removeCount);
+      let p = s.split("");
+      pickedPos.forEach(i=>p[i]="_");
+      data.prompt=`補全單字：${p.join("")}（中文：${base.zh}）`;
+      data.answer=base.en;
+    }
+    return data;
+  });
+}
 
-# 分割訓練集和測試集
-X = data.drop("Survived", axis=1)
-y = data["Survived"]
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
+function renderQuestion(){
+  const q=quiz[idx];
+  $("#qIdx").textContent=idx+1;
+  $("#qType").textContent=q.type;
+  $("#question").textContent=q.prompt;
+  $("#options").innerHTML="";
+  $("#inputArea").classList.add("hidden");
+  $("#btnNext").classList.add("hidden");
+  $("#btnFinish").classList.add("hidden");
 
-# 建立決策樹模型
-clf = DecisionTreeClassifier(random_state=42, max_depth=3)
-clf.fit(X_train, y_train)
+  if(q.options.length){
+    q.options.forEach(opt=>{
+      const btn=document.createElement("button");
+      btn.className="option";
+      btn.textContent=opt;
+      btn.onclick=()=>{
+        const correct = (opt===q.answer);
+        if(correct){ btn.classList.add("correct"); score++; }
+        else{ btn.classList.add("wrong"); }
+        [...$("#options").children].forEach(el=>{
+          if(el.textContent===q.answer) el.classList.add("correct");
+          el.disabled=true;
+        });
+        answers[idx]={q,chosen:opt,correct};
+        navNext();
+      };
+      $("#options").appendChild(btn);
+    });
+  }else{
+    $("#inputArea").classList.remove("hidden");
+    $("#answerInput").value="";
+    const submit=()=>{
+      const val=$("#answerInput").value.trim().toLowerCase();
+      const ok= val===q.answer.toLowerCase();
+      answers[idx]={q,chosen:val,correct:ok};
+      if(ok){ score++; alert("✅ 正確！"); } else { alert("❌ 正確答案是： "+q.answer); }
+      navNext();
+    };
+    $("#btnSubmit").onclick=submit;
+    $("#btnReveal").onclick=()=>{ alert("答案："+q.answer); };
+  }
+}
 
-# 預測和評估
-y_pred = clf.predict(X_test)
-accuracy = accuracy_score(y_test, y_pred)
-precision = precision_score(y_test, y_pred)
-recall = recall_score(y_test, y_pred)
-f1 = f1_score(y_test, y_pred)
+function navNext(){
+  if(idx===quiz.length-1){
+    $("#btnFinish").classList.remove("hidden");
+    $("#btnFinish").onclick=showResult;
+  }else{
+    $("#btnNext").classList.remove("hidden");
+    $("#btnNext").onclick=()=>{ idx++; $("#score").textContent=score; renderQuestion(); };
+  }
+}
 
-print(f"Accuracy: {accuracy:.2f}")
+function showResult(){
+  $("#finalScore").textContent=score;
+  $("#quizBox").classList.add("hidden");
+  $("#resultBox").classList.remove("hidden");
+  const wrap=document.createElement("div");
+  answers.forEach((a,i)=>{
+    const row=document.createElement("div");
+    row.className="option "+(a.correct?"correct":"wrong");
+    row.innerHTML=`${i+1}. ${a.q.base.en} – ${a.q.base.zh}<br><span class="small muted">你的答案：${a.chosen||"(空白)"}；正解：${a.q.answer}</span>`;
+    wrap.appendChild(row);
+  });
+  const container=$("#review"); container.innerHTML=""; container.appendChild(wrap);
+}
 
-# 畫出樹狀圖形
-plt.figure(figsize=(16, 10))
-plot_tree(clf, filled=True, feature_names=X.columns, class_names=['Not Survived', 'Survived'], proportion=True)
-plt.show()
-</code>
-        </pre>
-            `,
-            team: `
-                <h2>製作團隊</h2>
-                <p>本專案由以下團隊成員共同完成：</p>
-                <ul>
-                    <li>張小明 - 數據分析與特徵工程</li>
-                    <li>李大華 - 模型設計與訓練</li>
-                    <li>王小美 - 報告撰寫與視覺化</li>
-                </ul>
-            `
-        };
+function downloadWrongCSV(){
+  const wrongs = answers.filter(a=>!a.correct);
+  if(!wrongs.length){ alert("恭喜！沒有錯題。"); return; }
+  const rows = wrongs.map(a=>[csvEscape(a.q.base.en),csvEscape(a.q.base.zh)].join(","));
+  const blob = new Blob([`English,Chinese\n${rows.join("\n")}`],{type:"text/csv;charset=utf-8;"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="wrongs.csv"; a.click();
+  URL.revokeObjectURL(a.href);
+}
 
-        function showContent(section) {
-            const contentDiv = document.getElementById('content');
-            contentDiv.innerHTML = contentData[section];
-        }
-    </script>
+function showBank(){
+  $("#bankBox").classList.remove("hidden");
+  $("#bankCount").textContent=WORDS.length;
+  const tb=$("#bankTbl tbody");
+  tb.innerHTML="";
+  WORDS.forEach((w,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${201+i}</td><td>${w.en}</td><td>${w.zh}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+$("#btnStart").onclick=()=>{
+  idx=0; score=0; answers=[];
+  buildQuiz();
+  $("#score").textContent=0;
+  $("#intro").classList.add("hidden");
+  $("#resultBox").classList.add("hidden");
+  $("#quizBox").classList.remove("hidden");
+  renderQuestion();
+};
+$("#btnRetry").onclick=()=>{ $("#intro").classList.remove("hidden"); $("#resultBox").classList.add("hidden"); };
+$("#btnDownload").onclick=downloadWrongCSV;
+$("#btnShowList").onclick=showBank;
+</script>
 </body>
 </html>
